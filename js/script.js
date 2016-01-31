@@ -20,7 +20,7 @@ LearningData = function(nb){
 		}
 		else {
 			this.samples[i].push(vectorToMatrix(1+(1-2*Math.random())/div,1+(1-2*Math.random())/div))
-		this.samples[i].push(vectorToMatrix(0,1))
+			this.samples[i].push(vectorToMatrix(0,1))
 		}
 	}
 }
@@ -49,6 +49,25 @@ TestingData = function(){
 		this.samples[i] = []
 		this.samples[i].push(vectorToMatrix(1+(1-2*Math.random())/div,1+(1-2*Math.random())/div))
 		this.samples[i].push(vectorToMatrix(0,1))
+	}
+}
+
+IrisLearningData = function(data){
+	this.samples = [];
+
+	var lines = data.split('\n');
+	for(var i = 0;i < lines.length-1;i++){
+
+		var split = lines[i].split(/\s+/);
+		split.forEach(function(s,i){
+			split[i] = parseFloat(s)
+		})
+		var input = split.slice(0,4)
+		var output = split.slice(4,7)
+
+		this.samples[i] = []
+		this.samples[i].push(arrayToMatrix(input))
+		this.samples[i].push(arrayToMatrix(output))
 	}
 }
 
@@ -416,6 +435,16 @@ function vectorToMatrix(x,y){
 	return m
 }
 
+function arrayToMatrix(arr){
+	var l = arr.length
+	var m = new Matrix(l,1)
+	arr.forEach(function(a,i){
+		m.m[0][i] = a
+	})
+
+	return m
+}
+
 // 
 function sigmoid(x){
 	return 1.0/(1+Math.exp(-x))
@@ -443,25 +472,112 @@ function shuffle(o){
 
 
 
+
 var m = new Matrix()
-var n = new Network([2,20,2])
+
+//go()
+
+
+function go(){
+	var data = new LearningData(500)
+	console.log(data)
+
+	var n = new Network([2,20,2])
+	n.init()
+
+
+	console.log("Training network")
+	n.SGD(data.samples,30,200,3,true)
+
+
+	console.log("Testing network")
+	var ldata = new TestingData()
+	console.log(ldata)
+	var eval = n.evaluate(ldata.samples)
+	var nTest = ldata.samples.length
+	console.log("accuracy: " + eval/nTest*100+ "%")
+}
+
+
+var trainingData
+var validationData
+var testData
+
+
+function readTraining(evt) {
+    var f = evt.target.files[0]; 
+
+    if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+          var contents = e.target.result;
+          trainingData = new IrisLearningData(contents)
+      }
+      r.readAsText(f, 'ISO-8859-1');
+    } else { 
+        alert("Failed to load file");
+    }
+}
+function readValidation(evt) {
+    var f = evt.target.files[0]; 
+
+    if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+          var contents = e.target.result;
+          validationData = new IrisLearningData(contents)
+      }
+      r.readAsText(f, 'ISO-8859-1');
+    } else { 
+        alert("Failed to load file");
+    }
+}
+function readTest(evt) {
+    var f = evt.target.files[0]; 
+
+    if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+          var contents = e.target.result;
+          testData = new IrisLearningData(contents)
+      }
+      r.readAsText(f, 'ISO-8859-1');
+    } else { 
+        alert("Failed to load file");
+    }
+}
+
+var n = new Network([4,15,3])
 n.init()
 
-var data = new LearningData(500)
-console.log(data)
-console.log(n)
+function gogo(){
+	
+	console.log("Training network")
+	n.SGD(trainingData.samples,100,50,3,false)
 
-console.log("Training network")
-n.SGD(data.samples,30,20,3,true)
+	console.log("Testing network")
+	var eval = n.evaluate(validationData.samples)
+	var nTest = validationData.samples.length
+	console.log("accuracy: " + eval/nTest*100+ "%")
+}
+
+function test(){
+	var eval = n.evaluate(testData.samples)
+	var nTest = validationData.samples.length
+	console.log("accuracy: " + eval/nTest*100+ "%")
+}
 
 
-var ldata = new TestingData()
-console.log(ldata)
-console.log("Testing network")
-var eval = n.evaluate(ldata.samples)
-var nTest = ldata.samples.length
-console.log("accuracy: " + eval/nTest*100+ "%")
 
+$(document).ready(function(){
+    document.getElementById('traininginput').addEventListener('change', readTraining, false);
+    document.getElementById('validationinput').addEventListener('change', readValidation, false);
+    document.getElementById('testinput').addEventListener('change', readTest, false);
 
-
-
+    $("#train").on('click', function () {
+        gogo()
+      });
+    $("#test").on('click', function () {
+        test()
+      });
+})
