@@ -8,5 +8,32 @@ html, body, div, h1, canvas {
   vertical-align: baseline;
 }
 
+canvas{
+	border: 1px solid black;
+	display: inline;
+	float:left;
+}
+
+#canvasDiv{
+	display:inline;
+	width:300px;
+	height:300px;
+}
+#resultCanvasDiv{
+	clear:both;
+	
+}
+
+#result{
+	display: inline;
+	height:300px;
+	font-size: 1000%;
+}
+
+#buttons{
+	clear:both;
+	display:block;
+}
+
 
 
