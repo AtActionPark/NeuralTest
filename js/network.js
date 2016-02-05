@@ -102,6 +102,7 @@ Network.prototype.updateMiniBatch = function(miniBatch,eta,lambda,n){
 		nabla_w.push(m.clone(b).zero())
 	})
 
+	console.log("		Batch gradient descent")	
 	miniBatch.forEach(function(d){
 		var x = d[0]
 		var y = d[1]
@@ -118,7 +119,6 @@ Network.prototype.updateMiniBatch = function(miniBatch,eta,lambda,n){
 			nabla_w[i] = m.add(w[0],w[1])
 		})
 	})
-
 
 	var resultW = []
 	zip(self.weights, nabla_w).forEach(function(w){
@@ -154,6 +154,7 @@ Network.prototype.SGD = function(trainingData, epochs, miniBatchSize, eta, lambd
 		for(var k = 0;k < n ; k+=miniBatchSize)
 			miniBatches.push(trainingData.slice(k,k+miniBatchSize))
 
+		console.log("Updating batches (" + miniBatches.length + ")")
 		miniBatches.forEach(function(miniBatch){
 			self.updateMiniBatch(miniBatch, eta, lambda, trainingData.length);
 		})
@@ -181,6 +182,7 @@ Network.prototype.SGD = function(trainingData, epochs, miniBatchSize, eta, lambd
 		}
 		console.log(" ------ ")
 	}
+
 	return [evaluationCost,evaluationAccuracy,trainingCost,trainingAccuracy]
 }
 

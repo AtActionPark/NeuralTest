@@ -115,21 +115,3 @@ TestingData = function(nb){
 		}
 	}
 }
-IrisLearningData = function(data){
-	this.samples = [];
-
-	var lines = data.split('\n');
-	for(var i = 0;i < lines.length-1;i++){
-
-		var split = lines[i].split(/\s+/);
-		split.forEach(function(s,i){
-			split[i] = parseFloat(s)
-		})
-		var input = split.slice(0,4)
-		var output = split.slice(4,7)
-
-		this.samples[i] = []
-		this.samples[i].push(arrayToMatrix(input))
-		this.samples[i].push(arrayToMatrix(output))
-	}
-}

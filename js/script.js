@@ -24,7 +24,7 @@ $(document).ready(function(){
     resultCanvas()
     load()
 
-	//testNumbers()
+	//trainNumbers()
 	//trainRandomVectors() 
 	//loadTest()
 })
@@ -39,9 +39,10 @@ function trainRandomVectors(){
 	console.log("Training network")
 	n.SGD(trainingData,30,10,3,0.1,validationData, true, true, true, true)
 }
-function testNumbers(){
-	n = new Network([784,100,10],new CrossEntropyCost)
+function trainNumbers(){
+	n = new Network([784,30,10],new CrossEntropyCost)
 	n.init()
+	console.log("Building Set")
 	MNISTLoad()
     var set = mnist.set(8000, 2000);
 	var trainingSet = set.training;
@@ -49,9 +50,11 @@ function testNumbers(){
 	
 	trainingData = new buildSet(trainingSet).samples
 	validationData = new buildSet(testSet).samples
+	console.log("Set Built")
 
 	console.log("Training network")
-	n.SGD(trainingData,30,10,0.1,4.0,validationData, false, true, false, false)
+	n.SGD(trainingData,20,10,0.1,4.0,validationData, false, true, false, false)
+	console.log("Network Trained")
 }
 function loadTest(){
 	load()
@@ -107,9 +110,7 @@ function guess(offsetX,offsetY){
 	
 	clickX = new Array();
 	clickY = new Array();
-	clickDrag = new Array();
-
-	
+	clickDrag = new Array();	
 }
 
 
