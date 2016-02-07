@@ -21,9 +21,10 @@ Network.prototype.init= function(){
 
 	var noLast = this.sizes.slice(0,this.sizes.length-1);
 	var z = zip(noFirst,noLast)
-	var weightBias = 1.0/Math.log(this.sizes[0])
+
 	z.forEach(function(t){
-		weights.push(new Matrix(t[0],t[1]).randomize().multiplyScalar(weightBias))
+		weights.push(new Matrix(t[0],t[1]).randomize().multiplyScalar(1.0/Math.sqrt(t[0])))
+		//weights.push(new Matrix(t[0],t[1]).randomize2(t[0],t[1]))
 	})
 
 	this.weights = weights

@@ -24,9 +24,10 @@ $(document).ready(function(){
     resultCanvas()
     load()
 
-	//trainNumbers()
+	trainNumbers()
 	//trainRandomVectors() 
 	//loadTest()
+
 })
 
 function trainRandomVectors(){
@@ -44,16 +45,16 @@ function trainNumbers(){
 	n.init()
 	console.log("Building Set")
 	MNISTLoad()
-    var set = mnist.set(8000, 2000);
+  var set = mnist.set(800, 100);
 	var trainingSet = set.training;
 	var testSet = set.test;
 	
 	trainingData = new buildSet(trainingSet).samples
 	validationData = new buildSet(testSet).samples
-	console.log("Set Built")
 
 	console.log("Training network")
-	n.SGD(trainingData,20,10,0.1,4.0,validationData, false, true, false, false)
+	var result = n.SGD(trainingData,10,10,0.1,2.0,validationData, false, false, false, true)
+	console.log(result)
 	console.log("Network Trained")
 }
 function loadTest(){
@@ -290,7 +291,7 @@ function imageDataToGrayscale(imgData) {
 }
 
 // takes the image in the canvas, centers & resizes it, then puts into 10x10 px bins
-// to give a 28x28 grayscale image; then, computes class probability via neural network
+// to give a 28x28 grayscale image
 function preprocess() {
 
 	// convert RGBA image to a grayscale array, then compute bounding rectangle and center of mass  

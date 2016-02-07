@@ -1,3 +1,5 @@
+var z = new Ziggurat();
+
 //Matrix
 Matrix = function(column,row){
 	var m = []
@@ -17,7 +19,18 @@ Matrix.prototype.randomize = function(){
 	for(var j = 0;j<this.row;j++){
 		this.m[j] = []
 		for(var i = 0;i<this.column;i++){
-			this.m[j].push(1-2*Math.random())
+			this.m[j].push(z.nextGaussian())
+		}
+	}
+	return this
+}
+
+Matrix.prototype.randomize2 = function(input,output){
+	for(var j = 0;j<this.row;j++){
+		this.m[j] = []
+		for(var i = 0;i<this.column;i++){
+			var t = 4*Math.sqrt(6)/Math.sqrt(input+output)
+			this.m[j].push(2*t*Math.random()-t)
 		}
 	}
 	return this
