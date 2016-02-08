@@ -53,7 +53,7 @@ function trainNumbers(){
 	console.log("Set Built")
 
 	console.log("Training network")
-	n.SGD(trainingData,20,10,0.1,4.0,validationData, false, true, false, false)
+	n.SGD(trainingData,30,10,0.1,3.0,validationData, false, true, false, false)
 	console.log("Network Trained")
 }
 function loadTest(){
