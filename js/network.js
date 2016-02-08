@@ -21,9 +21,10 @@ Network.prototype.init= function(){
 
 	var noLast = this.sizes.slice(0,this.sizes.length-1);
 	var z = zip(noFirst,noLast)
-	var weightBias = 1.0/Math.log(this.sizes[0])
+
 	z.forEach(function(t){
-		weights.push(new Matrix(t[0],t[1]).randomize().multiplyScalar(weightBias))
+		weights.push(new Matrix(t[0],t[1]).randomize().multiplyScalar(1.0/Math.sqrt(t[0])))
+		//weights.push(new Matrix(t[0],t[1]).randomize2(t[0],t[1]))
 	})
 
 	this.weights = weights
@@ -167,7 +168,7 @@ Network.prototype.SGD = function(trainingData, epochs, miniBatchSize, eta, lambd
 		}
 		if(monitorTrainingAccuracy){
 			accuracy = self.accuracy(trainingData)
-			trainingAccuracy.push(accuracy)
+			trainingAccuracy.push(accuracy/n)
 			console.log("	Accuracy on training data: " + accuracy/n)
 		}
 		if(monitorEvaluationCost){
@@ -177,10 +178,11 @@ Network.prototype.SGD = function(trainingData, epochs, miniBatchSize, eta, lambd
 		}
 		if(monitorEvaluationAccuracy){
 			accuracy = self.accuracy(evaluationData)
-			evaluationAccuracy.push(accuracy)
+			evaluationAccuracy.push(accuracy/n)
 			console.log("	Accuracy on evaluation data: " + accuracy/nData)
 		}
 		console.log(" ------ ")
+		//eta*=0.9
 	}
 
 	return [evaluationCost,evaluationAccuracy,trainingCost,trainingAccuracy]

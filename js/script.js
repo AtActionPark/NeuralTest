@@ -12,7 +12,8 @@ var testSet
 var n;
 
 $(document).ready(function(){
-
+	document.getElementById('trainingInput').addEventListener('change', readData, false);
+	document.getElementById('trainingLabel').addEventListener('change', readLabel, false);
 	$("#guess").on('click', function () {
         guess()
       });
@@ -24,9 +25,12 @@ $(document).ready(function(){
     resultCanvas()
     load()
 
+
+
 	//trainNumbers()
 	//trainRandomVectors() 
 	//loadTest()
+
 })
 
 function trainRandomVectors(){
@@ -43,18 +47,16 @@ function trainNumbers(){
 	n = new Network([784,30,10],new CrossEntropyCost)
 	n.init()
 	console.log("Building Set")
-	MNISTLoad()
-    var set = mnist.set(8000, 2000);
-	var trainingSet = set.training;
-	var testSet = set.test;
-	
+	trainingSet = pixelValues.slice(10,10000)
+	testSet = pixelValues.slice(10001,11000)
+
 	trainingData = new buildSet(trainingSet).samples
 	validationData = new buildSet(testSet).samples
-	console.log("Set Built")
 
 	console.log("Training network")
-	n.SGD(trainingData,30,10,0.1,3.0,validationData, false, true, false, false)
-	console.log("Network Trained")
+	var result = n.SGD(trainingData,1,10,0.1,5.0,validationData, true, true, false, false)
+	console.log(result)
+	draw(trainingSet[7].input, resultContext)
 }
 function loadTest(){
 	load()
@@ -69,7 +71,7 @@ function loadTest(){
 
 
 function guess(offsetX,offsetY){
-	resultContext.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
+	resultContext.clearRect(0, 0, context.canvas.width, context.canvas.height);
 	
 	var input = preprocess()
 	
@@ -83,36 +85,12 @@ function guess(offsetX,offsetY){
 		}
 	})
 
-	//results consistent but not ordered?
-	var result = 0
-	if(index==0)
-		result = 8
-	else if(index==1)
-		result = 1 
-	else if(index==2)
-		result = 4 
-	else if(index==3)
-		result = 6 
-	else if(index==4)
-		result = 2 
-	else if(index==5)
-		result = 5 
-	else if(index==6)
-		result = 9 
-	else if(index==7)
-		result = 3 
-	else if(index==8)
-		result = 7 
-	else if(index==9)
-		result = 0 
-	console.log(result)
-	$("#result").html(result)
+	$("#result").html(index)
 	
 	clickX = new Array();
 	clickY = new Array();
 	clickDrag = new Array();	
 }
-
 
 function reset(){
 	context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
@@ -121,9 +99,6 @@ function reset(){
 	clickY = new Array();
 	clickDrag = new Array();
 }
-
-
-
 
 //canvas
 var clickX = new Array();
@@ -290,7 +265,7 @@ function imageDataToGrayscale(imgData) {
 }
 
 // takes the image in the canvas, centers & resizes it, then puts into 10x10 px bins
-// to give a 28x28 grayscale image; then, computes class probability via neural network
+// to give a 28x28 grayscale image
 function preprocess() {
 
 	// convert RGBA image to a grayscale array, then compute bounding rectangle and center of mass  
