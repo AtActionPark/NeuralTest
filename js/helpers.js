@@ -261,7 +261,8 @@ function readLabel(evt) {
       r.onload = function(e) { 
         var result = new Uint8ClampedArray(e.target.result)
         labelFileBuffer = result;
-        go()
+        LoadData()
+        trainNumbers()
       }
       r.readAsArrayBuffer(f);
     } else { 
@@ -271,8 +272,8 @@ function readLabel(evt) {
 
 var pixelValues     = [];
 
-function go(){
-  // It would be nice with a checker instead of a hard coded 60000 limit here
+function LoadData(){
+
   for (var image = 0; image <= 60000; image++) { 
     var pixels = [];
 
@@ -284,11 +285,11 @@ function go(){
     var output = JSON.stringify(labelFileBuffer[image + 8])
     var o = {input: pixels, output:labelToArray(output)}
     pixelValues.push(o)
- }
- var first = pixelValues.input
-
- trainNumbers()
+  }
 }
+
+
+
 
 function labelToArray(l){
   var result = [0,0,0,0,0,0,0,0,0,0]

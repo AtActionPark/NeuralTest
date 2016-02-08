@@ -24,13 +24,6 @@ $(document).ready(function(){
     initCanvas()
     resultCanvas()
     load()
-
-
-
-	//trainNumbers()
-	//trainRandomVectors() 
-	//loadTest()
-
 })
 
 function trainRandomVectors(){
@@ -47,8 +40,8 @@ function trainNumbers(){
 	n = new Network([784,30,10],new CrossEntropyCost)
 	n.init()
 	console.log("Building Set")
-	trainingSet = pixelValues.slice(10,10000)
-	testSet = pixelValues.slice(10001,11000)
+	trainingSet = pixelValues.slice(10,40000)
+	testSet = pixelValues.slice(40001,45000)
 
 	trainingData = new buildSet(trainingSet).samples
 	validationData = new buildSet(testSet).samples
