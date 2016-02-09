@@ -91,6 +91,7 @@ Network.prototype.backprop = function(x,y){
 }
 
 Network.prototype.updateMiniBatch = function(miniBatch,eta,lambda,n){
+	var i = 0
 	var self = this
 	var nabla_b = []
 	this.biases.forEach(function(b){

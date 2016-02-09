@@ -39,7 +39,7 @@ function buildTestingSet(){
 function buildSet(set){
   this.samples = [];
   for(var i = 0;i<set.length;i++){
-    console.log('done')
+    console.log('set as matrix')
     var input = set[i].input
     var output = set[i].output
 
@@ -47,6 +47,7 @@ function buildSet(set){
     this.samples[i].push(arrayToMatrix(input))
     this.samples[i].push(arrayToMatrix(output))
   } 
+  console.log('Set built')
 }
 function draw(digit, context){
   var imageData = context.getImageData(0,0, 28, 28);

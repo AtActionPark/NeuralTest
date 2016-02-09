@@ -1,14 +1,20 @@
 var m = new Matrix();
 var n;
+var trainingTools = false
 
 $(document).ready(function(){
-	document.getElementById('trainingInput').addEventListener('change', readData, false);
-	document.getElementById('trainingLabel').addEventListener('change', readLabel, false);
-	document.getElementById('testingInput').addEventListener('change', readData, false);
-	document.getElementById('testingLabel').addEventListener('change', readLabel, false);
-	$("#buildTraining").on('click', buildTrainingSet);
-	$("#buildTesting").on('click', buildTestingSet);
-	$("#train").on('click', trainNumbers);
+	if(trainingTools){
+		$('#trainingTools').append("Training Images<input type='file' id='trainingInput' /><br>Training Labels<input type='file' id='trainingLabel' /> <br><button id='buildTraining'>Build Training Set</button><br><br>Testing Images<input type='file' id='testingInput' /><br>Testing Labels<input type='file' id='testingLabel' /> <br><button id='buildTesting'>Build Testing Set</button><br><br><button id='init'>Init network</button><br><br><button id='train'>Train network</button><br><br><a download='info.txt' id='downloadlink' style='display: none'>Download</a>")
+		document.getElementById('trainingInput').addEventListener('change', readData, false);
+		document.getElementById('trainingLabel').addEventListener('change', readLabel, false);
+		document.getElementById('testingInput').addEventListener('change', readData, false);
+		document.getElementById('testingLabel').addEventListener('change', readLabel, false);
+		$("#buildTraining").on('click', buildTrainingSet);
+		$("#buildTesting").on('click', buildTestingSet);
+		$("#init").on('click', initNet);
+		$("#train").on('click', trainNumbers);
+	}
+	
 	$("#guess").on('click', guess);
 	$("#reset").on('click', reset);
 
@@ -17,32 +23,24 @@ $(document).ready(function(){
     load()
 })
 
-function trainNumbers(){
-	n = new Network([784,50,10],new CrossEntropyCost)
+function initNet(){
+	n = new Network([784,30,10],new CrossEntropyCost)
 	n.init()
 	console.log("Building Set")
-	trainingSet = pixelValues.slice(10,10000)
-	testSet = pixelValuesTest.slice(10,1000)
+
+	trainingSet = pixelValues.slice(1,40000)
+	validationSet = pixelValues.slice(40001)
 
 	trainingData = new buildSet(trainingSet).samples
-	validationData = new buildSet(testSet).samples
+	validationData = new buildSet(validationSet).samples
+}
 
+function trainNumbers(){
 	console.log("Training network")
-	var result = n.SGD(trainingData,30,10,0.1,5.0,validationData, true, true, false, false)
+	var result = n.SGD(trainingData,1,10,0.1,5.0,validationData, true, true, true, true)
 	console.log(result)
 }
 
-function continueTraining(){
-	trainingSet = pixelValues.slice(10001,20000)
-	testSet = pixelValuesTest.slice(1001,2000)
-
-	trainingData = new buildSet(trainingSet).samples
-	validationData = new buildSet(testSet).samples
-
-	console.log("Training network")
-	var result = n.SGD(trainingData,30,10,0.1,5.0,validationData, true, true, false, false)
-	console.log(result)
-}
 function guess(offsetX,offsetY){
 	resultContext.clearRect(0, 0, context.canvas.width, context.canvas.height);
 	

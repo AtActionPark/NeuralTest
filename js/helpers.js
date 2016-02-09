@@ -7,12 +7,11 @@ function vectorToMatrix(x,y){
 }
 
 function arrayToMatrix(arr){
-	var l = arr.length
-	var m = new Matrix(l,1)
-	arr.forEach(function(a,i){
-		m.m[0][i] = a
-	})
-
+	var m = new Matrix(arr.length,1)
+	//arr.forEach(function(a,i){
+	//	m.m[0][i] = a
+	//})
+  m.m[0] = arr
 	return m
 }
 
@@ -137,30 +136,9 @@ function labelToArray(l){
   return result
 }
 
-function load(){
-  n = new Network(saved.size,CrossEntropyCost)
-  n.weights = saved.weights
-  n.biases = saved.biases
-}
 
-function save(){
-  data = {size: n.sizes, weights: n.weights, biases: n.biases}
-  console.log(JSON.stringify(data))
-  var link = document.getElementById('downloadlink');
-  link.href = makeTextFile(JSON.stringify(data));
-  link.style.display = 'block';
-}
-var textFile = null,
-makeTextFile = function (text) {
-  var data = new Blob([text], {type: 'text/plain'});
-  // If we are replacing a previously generated file we need to
-  // manually revoke the object URL to avoid memory leaks.
-  if (textFile !== null) {
-    window.URL.revokeObjectURL(textFile);
-  }
-  textFile = window.URL.createObjectURL(data);
-  return textFile;
-};
+
+
 
 
 
