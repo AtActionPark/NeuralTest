@@ -6,8 +6,10 @@
     <title>Test</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script  src="js/helpers.js"></script>
+    <script  src="js/canvas.js"></script>
     <script  src="js/matrix.js"></script>
     <script  src="js/saved.js"></script>
+    <script  src="js/set.js"></script>
     <script  src="js/network.js"></script>
     <script  src="js/script.js"></script>
 
@@ -16,8 +18,26 @@
   </head>
   <body>
     <div id="main">
-    <input type="file" id="trainingInput" /> 
-    <input type="file" id="trainingLabel" /> 
+        Training Images<input type="file" id="trainingInput" />
+        <br>
+        Training Labels<input type="file" id="trainingLabel" /> 
+        <br>
+        <button id="buildTraining">Build Training Set</button>
+        <br>
+        <br>
+
+        Testing Images<input type="file" id="testingInput" />
+        <br>
+        Testing Labels<input type="file" id="testingLabel" /> 
+        <br>
+        <button id="buildTesting">Build Testing Set</button>
+        <br>
+        <br>
+        <button id="train">Train network</button>
+        <br>
+        <br>
+        <a download="info.txt" id="downloadlink" style="display: none">Download</a>
+
         <div id="canvasDiv"></div>
         <div id="result"></div>
         
@@ -25,6 +45,7 @@
             <button id="guess">Guess</button>
             <button id="reset">Reset</button>
         </div>
+
         <div id="resultCanvasDiv"></div>
     </div>
   </body>

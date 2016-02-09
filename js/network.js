@@ -24,7 +24,6 @@ Network.prototype.init= function(){
 
 	z.forEach(function(t){
 		weights.push(new Matrix(t[0],t[1]).randomize().multiplyScalar(1.0/Math.sqrt(t[0])))
-		//weights.push(new Matrix(t[0],t[1]).randomize2(t[0],t[1]))
 	})
 
 	this.weights = weights

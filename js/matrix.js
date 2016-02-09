@@ -1,5 +1,6 @@
 var z = new Ziggurat();
 
+
 //Matrix
 Matrix = function(column,row){
 	var m = []
