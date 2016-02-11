@@ -3,8 +3,8 @@ var labelFileBuffer;
 var pixelValues = [];
 var pixelValuesTest = [];
 
+//Reads MNIST files and builds training set
 function buildTrainingSet(){
-  // It would be nice with a checker instead of a hard coded 60000 limit here
   for (var image = 0; image <= 60000; image++) { 
     var pixels = [];
     for (var y = 0; y <= 27; y++) {
@@ -19,8 +19,9 @@ function buildTrainingSet(){
  }
  console.log('Set Built')
 }
+
+//Reads MNIST files and builds testing set
 function buildTestingSet(){
-  // It would be nice with a checker instead of a hard coded 60000 limit here
   for (var image = 0; image <= 10000; image++) { 
     var pixels = [];
     for (var y = 0; y <= 27; y++) {
@@ -36,6 +37,7 @@ function buildTestingSet(){
  console.log('Set Built')
 }
 
+//Transform the set into needed format
 function buildSet(set){
   this.samples = [];
   for(var i = 0;i<set.length;i++){
@@ -49,6 +51,7 @@ function buildSet(set){
   } 
   console.log('Set built')
 }
+
 function draw(digit, context){
   var imageData = context.getImageData(0,0, 28, 28);
   for (var i = 0; i < digit.length; i++)

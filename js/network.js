@@ -1,4 +1,9 @@
 //Network
+
+//Network definition. 
+// 'sizes' represents the number of layers, and of neurons per layer
+//Ex; [10,30,2] for a 3 layers net, with 10 inputs, 30hidden neurons, and 2 output
+//the cost should be either QuadraticCost or CrossEntropyCost
 Network = function(sizes, cost){
 	this.numLayers = sizes.length;
 	this.sizes = sizes;
@@ -7,12 +12,14 @@ Network = function(sizes, cost){
 	this.cost = cost
 }
 
+//initialize biases and weights
 Network.prototype.init= function(){
 	var biases = [];
 	var weights = [];
 
 	var noFirst = this.sizes.slice(1,this.sizes.length);
 
+	//no biases for input
 	noFirst.forEach(function(y){
 		biases.push(new Matrix(y,1).randomize())
 	})
@@ -22,6 +29,7 @@ Network.prototype.init= function(){
 	var noLast = this.sizes.slice(0,this.sizes.length-1);
 	var z = zip(noFirst,noLast)
 
+	//weights are initialized with a smaller distribution
 	z.forEach(function(t){
 		weights.push(new Matrix(t[0],t[1]).randomize().multiplyScalar(1.0/Math.sqrt(t[0])))
 	})
@@ -29,6 +37,7 @@ Network.prototype.init= function(){
 	this.weights = weights
 }
 
+//returns the output of the network for a given input
 Network.prototype.feedforward = function(a){
 	zip(this.biases,this.weights).forEach(function(t){
 		var b = t[0]
@@ -39,6 +48,7 @@ Network.prototype.feedforward = function(a){
 	return a
 }
 
+//Backprop algo. See http://neuralnetworksanddeeplearning.com/chap1.html
 Network.prototype.backprop = function(x,y){
 	var self = this
 	nabla_b = []
@@ -71,7 +81,6 @@ Network.prototype.backprop = function(x,y){
 	//backward pass
 	var delta = self.cost.delta(zs[zs.length-1],activations[activations.length-1],y)
 
-
 	nabla_b[nabla_b.length-1] = delta
 	nabla_w[nabla_w.length-1] = m.multiply(m.transpose(activations[activations.length-2]),delta)
 
@@ -90,6 +99,7 @@ Network.prototype.backprop = function(x,y){
 	return [nabla_b,nabla_w]
 }
 
+//Backpropagates and update weights and biases for each batch of data
 Network.prototype.updateMiniBatch = function(miniBatch,eta,lambda,n){
 	var i = 0
 	var self = this
@@ -136,6 +146,8 @@ Network.prototype.updateMiniBatch = function(miniBatch,eta,lambda,n){
 	self.biases = resultB
 }
 
+
+//SGD algo. Batches the data, update each batch, and store epoch performance
 Network.prototype.SGD = function(trainingData, epochs, miniBatchSize, eta, lambda, evaluationData,monitorEvaluationCost,monitorEvaluationAccuracy,monitorTrainingCost,monitorTrainingAccuracy){
 	var self= this;
 	evaluationCost = []
@@ -188,6 +200,8 @@ Network.prototype.SGD = function(trainingData, epochs, miniBatchSize, eta, lambd
 	return [evaluationCost,evaluationAccuracy,trainingCost,trainingAccuracy]
 }
 
+//computes network accuracy. Feed forwards the data and compare to expected result
+//returns the number or correctly identified points
 Network.prototype.accuracy = function(data){
 	var self = this
 	

@@ -1,11 +1,6 @@
 //helpers
-function vectorToMatrix(x,y){
-	var m = new Matrix(2,1)
-	m.m[0][0] = x;
-	m.m[0][1] = y;
-	return m
-}
 
+//Transforms an array to the used matrix format
 function arrayToMatrix(arr){
 	var m = new Matrix(arr.length,1)
 	//arr.forEach(function(a,i){
@@ -15,6 +10,7 @@ function arrayToMatrix(arr){
 	return m
 }
 
+
 function sigmoid(x){
 	return 1.0/(1+Math.exp(-x))
 }
@@ -23,6 +19,7 @@ function sigmoidPrime(x){
 	return sigmoid(x)*(1-sigmoid(x))
 }
 
+//Returns a list for iteration on two parameters
 function zip() {
     var args = [].slice.call(arguments);
     var shortest = args.length==0 ? [] : args.reduce(function(a,b){
@@ -39,10 +36,9 @@ function shuffle(o){
     return o;
 }
 
+//Ziggurat algo for generating random numbers following a gaussian distribution
 function Ziggurat(){
-
   var jsr = 123456789;
-
   var wn = Array(128);
   var fn = Array(128);
   var kn = Array(128);
@@ -130,6 +126,7 @@ function Ziggurat(){
   zigset();
 }
 
+//Transform the sample result (1,2,3 ...) into a 10 sized array
 function labelToArray(l){
   var result = [0,0,0,0,0,0,0,0,0,0]
   result[l] = 1

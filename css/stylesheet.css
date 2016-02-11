@@ -25,14 +25,24 @@ canvas{
 }
 
 #result{
+	position: relative;
+	margin:20px;
+	top:40px;
 	display: inline;
-	height:300px;
 	font-size: 1000%;
 }
 
 #buttons{
 	clear:both;
 	display:block;
+}
+
+#resultCanvasDiv{
+	display:none;
+}
+
+#main{
+	margin:10px;
 }
 
 

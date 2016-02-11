@@ -1,6 +1,9 @@
 var m = new Matrix();
 var n;
-var trainingTools = false
+var trainingTools = true
+var trainingData 
+var validationData 
+var testData 
 
 $(document).ready(function(){
 	if(trainingTools){
@@ -16,7 +19,8 @@ $(document).ready(function(){
 	}
 	
 	$("#guess").on('click', guess);
-	$("#reset").on('click', reset);
+	$("#showProcess").on('change', toggleProcess);
+
 
     initCanvas()
     resultCanvas()
@@ -24,20 +28,27 @@ $(document).ready(function(){
 })
 
 function initNet(){
+	trainingSize = 4000;
+	validationSize = 1000;
+	testSize = 1000
+
 	n = new Network([784,30,10],new CrossEntropyCost)
 	n.init()
 	console.log("Building Set")
 
-	trainingSet = pixelValues.slice(1,40000)
-	validationSet = pixelValues.slice(40001)
+	trainingSet = pixelValues.slice(1,trainingSize)
+	validationSet = pixelValues.slice(trainingSize+1, trainingSize+1+validationSize)
+	testSet = pixelValuesTest.slice(1,testSize)
 
 	trainingData = new buildSet(trainingSet).samples
 	validationData = new buildSet(validationSet).samples
+	testData = new buildSet(testSet).samples
 }
 
 function trainNumbers(){
 	console.log("Training network")
 	var result = n.SGD(trainingData,1,10,0.1,5.0,validationData, true, true, true, true)
+	console.log("	Accuracy on Test data: " + n.accuracy(testData)/testData.length)
 	console.log(result)
 }
 
@@ -101,6 +112,7 @@ function save(){
   link.href = makeTextFile(JSON.stringify(data));
   link.style.display = 'block';
 }
+
 var textFile = null,
 makeTextFile = function (text) {
   var data = new Blob([text], {type: 'text/plain'});
@@ -112,10 +124,15 @@ makeTextFile = function (text) {
   textFile = window.URL.createObjectURL(data);
   return textFile;
 };
+
 function load(){
   n = new Network(saved.size,CrossEntropyCost)
   n.weights = saved.weights
   n.biases = saved.biases
+}
+
+function toggleProcess(){
+	$("#resultCanvasDiv").toggle()
 }
 
 

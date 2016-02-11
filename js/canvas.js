@@ -7,6 +7,7 @@ var clickY = new Array();
 var clickDrag = new Array();
 var paint;
 
+//Initialize the canvas that will receive the post processed drawing
 function resultCanvas(){
 	var canvasWidth = 280
 	var canvasHeight = 280
@@ -22,6 +23,7 @@ function resultCanvas(){
 	resultContext = resultCanvas.getContext("2d");
 }
 
+//Initialize the drawing canvas
 function initCanvas(){
 	var canvasWidth = 280
 	var canvasHeight = 280
@@ -61,6 +63,7 @@ function initCanvas(){
 	});		
 }
 
+//Keep track of the mouse path
 function addClick(x, y, dragging){
   clickX.push(x);
   clickY.push(y);
@@ -71,7 +74,7 @@ function redraw(){
   context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
   context.strokeStyle = "#000000";
   context.lineJoin = "round";
-  context.lineWidth = 25;
+  context.lineWidth = 23;
 			
   for(var i=0; i < clickX.length; i++) {		
     context.beginPath();

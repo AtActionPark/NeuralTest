@@ -1,7 +1,8 @@
+// gaussian distributed random generator
 var z = new Ziggurat();
 
 
-//Matrix
+//Matrix definition. Only 2D
 Matrix = function(column,row){
 	var m = []
 	this.column = column;
@@ -16,6 +17,7 @@ Matrix = function(column,row){
 	this.m = m
 }
 
+//Randomizes a matrix with normal distribution (mean 0, standard deviation 1 )
 Matrix.prototype.randomize = function(){
 	for(var j = 0;j<this.row;j++){
 		this.m[j] = []
@@ -26,17 +28,7 @@ Matrix.prototype.randomize = function(){
 	return this
 }
 
-Matrix.prototype.randomize2 = function(input,output){
-	for(var j = 0;j<this.row;j++){
-		this.m[j] = []
-		for(var i = 0;i<this.column;i++){
-			var t = 4*Math.sqrt(6)/Math.sqrt(input+output)
-			this.m[j].push(2*t*Math.random()-t)
-		}
-	}
-	return this
-}
-
+//Apply a function on all matrix elements
 Matrix.prototype.applyAll = function(func){
 	for(var j = 0;j<this.row;j++){
 		for(var i = 0;i<this.column;i++){
@@ -46,6 +38,7 @@ Matrix.prototype.applyAll = function(func){
 	return this;
 }
 
+//returns the sum of two matrix
 Matrix.prototype.add = function(m1,m2){
 	if(m1.column != m2.column || m1.row!=m2.row){
 		console.log("cant add matrixes of different dimensions")
@@ -62,6 +55,7 @@ Matrix.prototype.add = function(m1,m2){
 	return result
 }
 
+//returns the hadamrd product of two matrix
 Matrix.prototype.hadamard = function(m1,m2){
 	if(m1.column != m2.column || m1.row!=m2.row){
 		console.log("cant add matrixes of different dimensions")
@@ -78,6 +72,7 @@ Matrix.prototype.hadamard = function(m1,m2){
 	return result
 }
 
+//returns the difference of two matrix
 Matrix.prototype.minus = function(m1,m2){
 	if(m1.column != m2.column || m1.row!=m2.row){
 		console.log("cant add matrixes of different dimensions")
@@ -94,6 +89,7 @@ Matrix.prototype.minus = function(m1,m2){
 	return result
 }
 
+//returns the dot product of two matrix
 Matrix.prototype.multiply = function(m1,m2){
 	if(m1.column != m2.row){
 		console.log("cant multiply matrices if colums m1 != rows m2")
@@ -110,6 +106,7 @@ Matrix.prototype.multiply = function(m1,m2){
 	return result
 }
 
+//returns the copy of a matrix
 Matrix.prototype.clone = function(m1){
 	var result = new Matrix(m1.column, m1.row)
 
@@ -121,6 +118,7 @@ Matrix.prototype.clone = function(m1){
 	return result
 }
 
+//returns a zeroed out copy of a matrix
 Matrix.prototype.zero = function(){
 	var result = new Matrix(this.column, this.row)
 
@@ -132,6 +130,7 @@ Matrix.prototype.zero = function(){
 	return result
 }
 
+//draw te matrix in the console
 Matrix.prototype.draw = function(){
 	var line = "" 
 	for(var j = 0;j<this.row;j++){
@@ -145,6 +144,7 @@ Matrix.prototype.draw = function(){
 	console.log("---")
 }
 
+//returns the transposed matrix
 Matrix.prototype.transpose = function(m1){
 	var result = new Matrix(m1.row,m1.column)
 	var newArray = m1.m[0].map(function(col, i) { 
@@ -156,10 +156,12 @@ Matrix.prototype.transpose = function(m1){
 	return result
 }
 
+//Multiply all matrix elements by a scalar
 Matrix.prototype.multiplyScalar = function(x){
 	return this.applyAll(function(y){return y*x})
 }
 
+//returns the norm of the matrix
 Matrix.prototype.norm = function(){
 	var norm = 0;
 	for(var j = 0;j<this.row;j++){
@@ -170,6 +172,7 @@ Matrix.prototype.norm = function(){
 	return Math.sqrt(norm);
 }
 
+//returns an identity matrix of the same shape as the argument matrix
 Matrix.prototype.identity = function(m1){
 	var result = new Matrix(m1.column, m1.row)
 
