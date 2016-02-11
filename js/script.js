@@ -1,6 +1,6 @@
 var m = new Matrix();
 var n;
-var trainingTools = true
+var trainingTools = false
 var trainingData 
 var validationData 
 var testData 
@@ -27,6 +27,7 @@ $(document).ready(function(){
     load()
 })
 
+//create the network
 function initNet(){
 	trainingSize = 4000;
 	validationSize = 1000;
