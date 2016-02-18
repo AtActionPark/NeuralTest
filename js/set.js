@@ -3,9 +3,10 @@ var labelFileBuffer;
 var pixelValues = [];
 var pixelValuesTest = [];
 
-//Reads MNIST files and builds training set
-function buildTrainingSet(){
-  for (var image = 0; image <= 60000; image++) { 
+//Reads MNIST files and store set data in pixelValue
+function buildTrainingSet(event){
+  var size = event.data.trainingSize + event.data.validationSize
+  for (var image = 0; image <= size; image++) { 
     var pixels = [];
     for (var y = 0; y <= 27; y++) {
         for (var x = 0; x <= 27; x++) {
@@ -14,15 +15,16 @@ function buildTrainingSet(){
     }
     console.log('Building Training Set')
     var output = JSON.stringify(labelFileBuffer[image + 8])
-    var o = {input: pixels, output:labelToArray(output)}
+    var o = {input: arrayToMatrix(pixels), output: arrayToMatrix(labelToArray(output))}
     pixelValues.push(o)
- }
- console.log('Set Built')
+  }
+  return pixelValues
 }
 
-//Reads MNIST files and builds testing set
-function buildTestingSet(){
-  for (var image = 0; image <= 10000; image++) { 
+//Reads MNIST files and store set data in pixelValueTest
+function buildTestingSet(event){
+  var size = event.data.testSize
+  for (var image = 0; image <= size; image++) { 
     var pixels = [];
     for (var y = 0; y <= 27; y++) {
         for (var x = 0; x <= 27; x++) {
@@ -31,25 +33,22 @@ function buildTestingSet(){
     }
     console.log('Building Testing Set')
     var output = JSON.stringify(labelFileBuffer[image + 8])
-    var o = {input: pixels, output:labelToArray(output)}
+    var o = {input: arrayToMatrix(pixels), output: arrayToMatrix(labelToArray(output))}
     pixelValuesTest.push(o)
  }
- console.log('Set Built')
 }
 
 //Transform the set into needed format
-function buildSet(set){
-  this.samples = [];
+function formatSet(set){
+  var result  = [];
   for(var i = 0;i<set.length;i++){
-    console.log('set as matrix')
-    var input = set[i].input
-    var output = set[i].output
+    console.log('Formating set')
 
-    this.samples[i] = []
-    this.samples[i].push(arrayToMatrix(input))
-    this.samples[i].push(arrayToMatrix(output))
+    result[i] = []
+    result[i].push(set[i].input)
+    result[i].push(set[i].output)
   } 
-  console.log('Set built')
+  return result
 }
 
 function draw(digit, context){

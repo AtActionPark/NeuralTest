@@ -21,7 +21,7 @@ canvas{
 }
 #resultCanvasDiv{
 	clear:both;
-	
+	display:none;
 }
 
 #result{
@@ -37,12 +37,24 @@ canvas{
 	display:block;
 }
 
-#resultCanvasDiv{
-	display:none;
-}
 
 #main{
 	margin:10px;
+}
+
+
+
+#options{
+	display:block;
+	margin: 10px 0;
+	padding: 10px ;
+	border:1px solid black;
+	border-radius:10px;
+}
+
+#trainingTools{
+	display: none;
+	padding: 10px ;
 }
 
 

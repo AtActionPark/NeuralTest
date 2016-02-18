@@ -1,4 +1,5 @@
 //Network
+//See http://neuralnetworksanddeeplearning.com/chap1.html for algos
 
 //Network definition. 
 // 'sizes' represents the number of layers, and of neurons per layer
@@ -114,6 +115,8 @@ Network.prototype.updateMiniBatch = function(miniBatch,eta,lambda,n){
 	})
 
 	console.log("		Batch gradient descent")	
+
+
 	miniBatch.forEach(function(d){
 		var x = d[0]
 		var y = d[1]
@@ -145,7 +148,6 @@ Network.prototype.updateMiniBatch = function(miniBatch,eta,lambda,n){
 	self.weights = resultW
 	self.biases = resultB
 }
-
 
 //SGD algo. Batches the data, update each batch, and store epoch performance
 Network.prototype.SGD = function(trainingData, epochs, miniBatchSize, eta, lambda, evaluationData,monitorEvaluationCost,monitorEvaluationAccuracy,monitorTrainingCost,monitorTrainingAccuracy){
@@ -201,7 +203,7 @@ Network.prototype.SGD = function(trainingData, epochs, miniBatchSize, eta, lambd
 }
 
 //computes network accuracy. Feed forwards the data and compare to expected result
-//returns the number or correctly identified points
+//returns the number of correctly identified points
 Network.prototype.accuracy = function(data){
 	var self = this
 	
@@ -274,3 +276,5 @@ QuadraticCost.prototype.delta = function(z,a,y){
 }
 
 
+
+    

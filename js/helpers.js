@@ -133,6 +133,37 @@ function labelToArray(l){
   return result
 }
 
+function readData(evt) {
+    //Retrieve the first (and only!) File from the FileList object
+    var f = evt.target.files[0]; 
+
+    if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+        var result = new Uint8ClampedArray(e.target.result)
+        dataFileBuffer = result;
+      }
+      r.readAsArrayBuffer(f);
+    } else { 
+        alert("Failed to load file");
+    }
+}
+function readLabel(evt) {
+    //Retrieve the first (and only!) File from the FileList object
+    var f = evt.target.files[0]; 
+
+    if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+        var result = new Uint8ClampedArray(e.target.result)
+        labelFileBuffer = result;
+      }
+      r.readAsArrayBuffer(f);
+    } else { 
+        alert("Failed to load file");
+    }
+}
+
 
 
 

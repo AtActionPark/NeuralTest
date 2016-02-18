@@ -13,20 +13,45 @@
     <script  src="js/network.js"></script>
     <script  src="js/script.js"></script>
 
-
     <link rel="stylesheet" type="text/css" href="css/stylesheet.css">
   </head>
   <body>
     <div id="main">
-        <div id="trainingTools">
-            
+        <div id='options'>
+            <input type="checkbox" id="showTools" value="showTools">Show training options
+            <input type="checkbox" id="showProcess" value="showProcess">Show pre process
+            <div id="trainingTools">
+                Training Images<input type='file' id='trainingInput' />
+                <br>
+                Training Labels<input type='file' id='trainingLabel' />
+                <br>
+                <button id='buildTraining'>Build Training Set</button>
+                <br>
+                <br>
+                Testing Images<input type='file' id='testingInput' />
+                <br>Testing Labels<input type='file' id='testingLabel' /> 
+                <br>
+                <button id='buildTesting'>Build Testing Set</button>
+                <br>
+                <br>
+                <button id='format'>Format Set</button>
+                <br>
+                <br>
+                <button id='init'>Init network</button>
+                <br>
+                <br>
+                <button id='train'>Train network</button>
+                <br>
+                <br>
+                <a download='info.txt' id='downloadlink' style='display: none'>Download</a>
+            </div>
         </div>
         <div id="canvasDiv"></div>
         <div id="result"></div>
         
         <div id="buttons">
             <button id="guess">Guess</button>
-            <input type="checkbox" id="showProcess" value="showProcess">Show pre process
+            
             <br>
         </div>
         <div id="resultCanvasDiv"></div>

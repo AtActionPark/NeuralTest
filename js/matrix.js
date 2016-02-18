@@ -187,3 +187,5 @@ Matrix.prototype.identity = function(m1){
 	return result
 }
 
+var m = new Matrix();
+
