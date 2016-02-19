@@ -1,7 +1,9 @@
 var originalCanvas
 var resultCanvas
+var graphCanvas
 var context
 var resultContext
+var graphContext
 var clickX = new Array();
 var clickY = new Array();
 var clickDrag = new Array();
@@ -74,7 +76,7 @@ function redraw(){
   context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
   context.strokeStyle = "#000000";
   context.lineJoin = "round";
-  context.lineWidth = 23;
+  context.lineWidth = 22;
 			
   for(var i=0; i < clickX.length; i++) {		
     context.beginPath();
@@ -237,4 +239,147 @@ function preprocess() {
 		}
 	}
 	return nnInput
+}
+
+
+//Initialize the canvas that will receive the graph
+function graphCanvas(){
+	var canvasWidth = 600
+	var canvasHeight = 400
+	var canvasDiv = document.getElementById('graphCanvasDiv');
+	graphCanvas = document.createElement('canvas');
+	graphCanvas.setAttribute('width', canvasWidth);
+	graphCanvas.setAttribute('height', canvasHeight);
+	graphCanvas.setAttribute('id', 'graphCanvas');
+	canvasDiv.appendChild(graphCanvas);
+	if(typeof G_vmlCanvasManager != 'undefined') {
+		graphCanvas = G_vmlCanvasManager.initElement(graphCanvas);
+	}
+	graphContext = graphCanvas.getContext("2d");
+}
+
+function rescale(valueIn, baseMin,baseMax, limitMin,limitMax){
+	return ((limitMax - limitMin) * (valueIn - baseMin) / (baseMax - baseMin)) + limitMin;
+}
+
+function plot(data,s1,s2,s3,s4){
+	var margin = 30
+	var w = graphContext.canvas.width
+	var h = graphContext.canvas.height
+	var h2 = h - margin
+
+	var serie1 = data[0] || [[]]
+	var max1 = serie1[0]
+	var serie2 = data[1] || [[]]
+	var min2 = serie2[0]
+
+	var serie3 = data[2] || [[]]
+	var max3 = serie3[0]
+	var serie4 = data[3] || [[]]
+	var min4 = serie4[0]
+
+	
+	var n = serie1.length
+	var istep = (w-2*margin)/(n-1)
+
+	var max = Math.max(max1,max3)
+	var min = Math.min(min2,min4)
+	
+	
+
+	graphContext.clearRect(0, 0, graphContext.canvas.width, graphContext.canvas.height); 
+  	graphContext.lineJoin = "round";
+  	graphContext.lineWidth = 1;
+  	graphContext.font = "15px Arial";
+  	graphContext.strokeStyle = "#000000";
+
+  	//x axis + legend
+  	graphContext.beginPath();
+	graphContext.moveTo(margin, h-margin);
+	graphContext.lineTo(w-margin, h-margin);
+	graphContext.closePath();
+	graphContext.stroke();
+
+	graphContext.fillText(n-1,w-margin -15 ,h-margin+15);
+	graphContext.fillText(0,margin,h-margin+15);
+
+	//y axis + legend left
+	graphContext.beginPath();
+	graphContext.moveTo(margin, 0);
+	graphContext.lineTo(margin, h-margin);
+	graphContext.closePath();
+	graphContext.stroke();
+
+	graphContext.fillText(Math.round(max * 10) / 10,Math.max(margin -30,0),15);
+	graphContext.fillText(0,Math.max(margin -30,0),h-margin);
+
+	//y axis + legend right
+	graphContext.beginPath();
+	graphContext.moveTo(w-margin, 0);
+	graphContext.lineTo(w-margin, h-margin);
+	graphContext.closePath();
+	graphContext.stroke();
+
+
+	graphContext.fillText(1,Math.min(w-margin+10,w-15),15);
+	graphContext.fillText(Math.round(min * 10) / 10,Math.min(w-margin+10,w-15),h-margin);
+
+	
+
+  	if(s1){
+		for(var i=0; i < serie1.length-1; i++) {
+			graphContext.strokeStyle = "#008000";		
+			graphContext.beginPath();
+			graphContext.moveTo(margin+i*istep, h2-serie1[i]/max*h2 );
+			graphContext.lineTo(margin+(i+1)*istep, h2-serie1[i+1]/max*h2);
+			graphContext.closePath();
+			graphContext.stroke();
+
+			//draw ticks on x axis
+			graphContext.strokeStyle = "#000000";
+			graphContext.beginPath();
+			graphContext.moveTo(margin+(i+1)*istep, h-margin);
+			graphContext.lineTo(margin+(i+1)*istep, h-margin+5);
+			graphContext.closePath();
+			graphContext.stroke();
+		}
+  	}
+  	if(s2){
+  		graphContext.strokeStyle = "#008000";
+  		graphContext.save();
+  		graphContext.setLineDash([5, 15]);
+		for(var i=0; i < serie2.length-1; i++) {		
+			graphContext.beginPath();
+			graphContext.moveTo(margin+i*istep, h2-(rescale(serie2[i],min,1,0,1 ))*h2);
+			graphContext.lineTo(margin+(i+1)*istep, h2-(rescale(serie2[i+1],min,1,0,1 ))*h2);
+			graphContext.closePath();
+			graphContext.stroke();
+		}
+  	}
+  	if(s3){
+  		graphContext.restore();
+  		graphContext.strokeStyle = "#ff0000";
+		for(var i=0; i < serie3.length-1; i++) {		
+			graphContext.beginPath();
+			graphContext.moveTo(margin+i*istep, h2-serie3[i]/max*h2 );
+
+			graphContext.lineTo(margin+(i+1)*istep, h2-serie3[i+1]/max*h2);
+			graphContext.closePath();
+			graphContext.stroke();
+		}
+  	}
+  	if(s4){
+  		graphContext.strokeStyle = "#ff0000";
+  		graphContext.save();
+  		graphContext.setLineDash([5, 15]);
+		for(var i=0; i < serie4.length-1; i++) {		
+			graphContext.beginPath();
+			graphContext.moveTo(margin+i*istep, h2-(rescale(serie4[i],min,1,0,1 ))*h2);
+
+			graphContext.lineTo(margin+(i+1)*istep, h2-(rescale(serie4[i+1],min,1,0,1 ))*h2);
+			graphContext.closePath();
+			graphContext.stroke();
+		}
+  	}
+  	graphContext.restore();
 }

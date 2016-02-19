@@ -57,5 +57,10 @@ canvas{
 	padding: 10px ;
 }
 
+#graphCanvas{
+	border:none;
+	margin-top: 20px;
+}
+
 
 

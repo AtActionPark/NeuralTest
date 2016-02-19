@@ -1,14 +1,14 @@
 //Set the size of the sets
-var trainingSize = 400
-var validationSize = 200
-var testSize = 100
+var trainingSize = 5000
+var testSize = 1000
+
 
 //Set the network number and size of layers 
 var size = [784,30,10]
 
 var trainingData 
-var validationData 
 var testData 
+var result = [[],[],[],[]]
 
 //empty matrix object, for calc
 var m = new Matrix();
@@ -24,6 +24,19 @@ var worker = new Worker(URL.createObjectURL(new Blob(["("+trainNumbersWorker.toS
 worker.onmessage = function(event){
 	n.weights = event.data.weights;
 	n.biases = event.data.biases;
+	event.data.result[0].forEach(function(r){
+		result[0].push(r)
+	})
+	event.data.result[1].forEach(function(r){
+		result[1].push(r)
+	})
+	event.data.result[2].forEach(function(r){
+		result[2].push(r)
+	})
+	event.data.result[3].forEach(function(r){
+		result[3].push(r)
+	})
+	plot(result,true,true,true,true)
 }
 
 $(document).ready(function(){
@@ -31,7 +44,7 @@ $(document).ready(function(){
 	document.getElementById('trainingLabel').addEventListener('change', readLabel, false);
 	document.getElementById('testingInput').addEventListener('change', readData, false);
 	document.getElementById('testingLabel').addEventListener('change', readLabel, false);
-	$("#buildTraining").on('click',{trainingSize: trainingSize, validationSize: validationSize}, buildTrainingSet);
+	$("#buildTraining").on('click',{trainingSize: trainingSize}, buildTrainingSet);
 	$("#buildTesting").on('click',{testSize: testSize}, buildTestingSet);
 	$("#format").on('click', formatSets);
 	$("#init").on('click', initNet);
@@ -43,26 +56,24 @@ $(document).ready(function(){
 
     initCanvas()
     resultCanvas()
+    graphCanvas()
     load()
+    plot([[50.1,40,30,20,10,0],[0.6,0.6,0.6,0.6,0.6,1],[45,35,25,15,5,0],[0,0.6,0.6,0.7,0.8,0.9]], true, true, true, true)
 })
 
 //MNIST sets need to be formated to the network input style
 //slice the sets to desired size, format them and post them to the worker
 function formatSets(event){
 	trainingSet = pixelValues.slice(0,trainingSize)
-	validationSet = pixelValues.slice(trainingSize+1, trainingSize+1+validationSize)
 	testSet = pixelValuesTest.slice(0,testSize)
 
 	trainingData =  formatSet(trainingSet)
-	validationData = formatSet(validationSet)
 	testData =  formatSet(testSet)
 	console.log("Set formated")
 
-	console.log("Posting training")
+	console.log("...Posting training")
 	worker.postMessage({trainingData: trainingData})
-	console.log("Posting validation")
-	setTimeout(worker.postMessage({validationData: validationData}),50)
-	console.log("Posting test")
+	console.log("...Posting test")
 	setTimeout(worker.postMessage({testData: testData}),50)
 }
 
@@ -85,21 +96,16 @@ function trainNumbersWorker(){
 	importScripts('file:///C:/Users/clementmatheron/Desktop/Prog/neuralTest/js/network.js') 
 
 	self.trainingData = []
-	self.validationData = []
 	self.testData = []
 
 	onmessage = function(event){
 		if(event.data.trainingData){
 			trainingData = event.data.trainingData
-			console.log("trainingData sent to worker")
-		}
-		if(event.data.validationData){
-			validationData = event.data.validationData
-			console.log("validationData sent to worker")
+			console.log("TrainingData sent to worker")
 		}
 		if(event.data.testData){
 			testData = event.data.testData
-			console.log("testData sent to worker")
+			console.log("TestData sent to worker")
 		}
 
 		// main function: run the SGD algo on the network
@@ -110,10 +116,8 @@ function trainNumbersWorker(){
     		n.biases = event.data.n.biases;
 
 			console.log("Training network")
-			var result = n.SGD(trainingData,1,10,0.1,5.0,validationData, true, true, true, true)
-			console.log("	Accuracy on Test data: " + n.accuracy(testData)/testData.length)
-			console.log(result)
-			postMessage({weights: n.weights,biases:n.biases})
+			var result = n.SGD(trainingData,30,10,0.1,5.0,testData, true, true, true, true)
+			postMessage({weights: n.weights,biases:n.biases, result: result})
     	}
 	}	
 }
@@ -130,6 +134,7 @@ function guess(offsetX,offsetY){
 	
 	var input = preprocess()
 	var feed = n.feedforward(arrayToMatrix(input)).m[0]
+	console.log(feed)
 	var max = 0
 	var index = 0
 	feed.forEach(function(f,i){

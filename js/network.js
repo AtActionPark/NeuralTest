@@ -192,7 +192,7 @@ Network.prototype.SGD = function(trainingData, epochs, miniBatchSize, eta, lambd
 		}
 		if(monitorEvaluationAccuracy){
 			accuracy = self.accuracy(evaluationData)
-			evaluationAccuracy.push(accuracy/n)
+			evaluationAccuracy.push(accuracy/nData)
 			console.log("	Accuracy on evaluation data: " + accuracy/nData)
 		}
 		console.log(" ------ ")

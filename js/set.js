@@ -5,7 +5,7 @@ var pixelValuesTest = [];
 
 //Reads MNIST files and store set data in pixelValue
 function buildTrainingSet(event){
-  var size = event.data.trainingSize + event.data.validationSize
+  var size = event.data.trainingSize
   for (var image = 0; image <= size; image++) { 
     var pixels = [];
     for (var y = 0; y <= 27; y++) {
@@ -13,11 +13,12 @@ function buildTrainingSet(event){
             pixels.push(dataFileBuffer[(image * 28 * 28) + (x + (y * 28)) + 15]/255);
         }
     }
-    console.log('Building Training Set')
+    console.log('...Building Training Set')
     var output = JSON.stringify(labelFileBuffer[image + 8])
     var o = {input: arrayToMatrix(pixels), output: arrayToMatrix(labelToArray(output))}
     pixelValues.push(o)
   }
+  console.log('Training Set built')
   return pixelValues
 }
 
@@ -31,18 +32,20 @@ function buildTestingSet(event){
             pixels.push(dataFileBuffer[(image * 28 * 28) + (x + (y * 28)) + 15]/255);
         }
     }
-    console.log('Building Testing Set')
+    console.log('...Building Testing Set')
     var output = JSON.stringify(labelFileBuffer[image + 8])
     var o = {input: arrayToMatrix(pixels), output: arrayToMatrix(labelToArray(output))}
     pixelValuesTest.push(o)
  }
+ console.log('Testing Set built')
+ return pixelValuesTest
 }
 
 //Transform the set into needed format
 function formatSet(set){
   var result  = [];
   for(var i = 0;i<set.length;i++){
-    console.log('Formating set')
+    console.log('...Formating set')
 
     result[i] = []
     result[i].push(set[i].input)
