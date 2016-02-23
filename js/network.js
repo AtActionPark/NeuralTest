@@ -44,7 +44,7 @@ Network.prototype.feedforward = function(a){
 		var b = t[0]
 		var w = t[1]
 		
-		a = m.add(m.multiply(a,w),b).applyAll(sigmoid)
+		a = m.add(m.multiply(a,w),b).applyAll(tanh)
 	})
 	return a
 }
@@ -75,7 +75,7 @@ Network.prototype.backprop = function(x,y){
 		var z = m.add(m.multiply(activation,w),b)
 		zs.push(z)
 
-		activation = m.clone(z).applyAll(sigmoid)
+		activation = m.clone(z).applyAll(tanh)
 		activations.push(activation)
 	})
 	
@@ -87,7 +87,7 @@ Network.prototype.backprop = function(x,y){
 
 	for(var i = 2;i<self.numLayers;i++){
 		var z = zs[zs.length-i]
-		var sp = m.clone(z).applyAll(sigmoidPrime)
+		var sp = m.clone(z).applyAll(tanhPrime)
 
 		var delta1 = m.multiply(delta,m.transpose(self.weights[self.weights.length-i+1]))
 
@@ -248,9 +248,9 @@ CrossEntropyCost.prototype.fn = function(a,y){
 	var result = 0;
 	for(var j = 0;j<a.row;j++){
 		for(var i = 0;i<a.column;i++){
-			var aij = a.m[j][i]
-			var yij = y.m[j][i]
-			result += -yij*Math.log(aij) - (1-yij)*Math.log(1-aij)
+			var aij = (1+a.m[j][i])/2
+			var yij = (1+y.m[j][i])/2
+			result += NaNToNum(-yij*Math.log(aij)) - NaNToNum((1-yij)*Math.log(1-aij))
 		}
 	}
 	return result;
@@ -271,7 +271,7 @@ QuadraticCost.prototype.fn = function(a,y){
 
 QuadraticCost.prototype.delta = function(z,a,y){
 	var cost = m.minus(a, y)
-	var sigz = m.clone(z).applyAll(sigmoidPrime)
+	var sigz = m.clone(z).applyAll(tanhPrime)
 	return m.hadamard(cost,sigz)
 }
 

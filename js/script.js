@@ -1,6 +1,6 @@
 //Set the size of the sets
-var trainingSize = 5000
-var testSize = 1000
+var trainingSize = 60000
+var testSize = 10000
 
 
 //Set the network number and size of layers 
@@ -58,7 +58,7 @@ $(document).ready(function(){
     resultCanvas()
     graphCanvas()
     load()
-    plot([[50.1,40,30,20,10,0],[0.6,0.6,0.6,0.6,0.6,1],[45,35,25,15,5,0],[0,0.6,0.6,0.7,0.8,0.9]], true, true, true, true)
+
 })
 
 //MNIST sets need to be formated to the network input style
@@ -71,6 +71,9 @@ function formatSets(event){
 	testData =  formatSet(testSet)
 	console.log("Set formated")
 
+	trainingData = shuffle(trainingData.splice(0,40000))
+	testData = shuffle(testData.splice(0,10000))
+
 	console.log("...Posting training")
 	worker.postMessage({trainingData: trainingData})
 	console.log("...Posting test")
@@ -82,6 +85,7 @@ function initNet(){
 	n = new Network(size,new CrossEntropyCost)
 	n.init()
 	console.log("Network created")
+
 }
 
 //start the train function on the worker
@@ -116,7 +120,7 @@ function trainNumbersWorker(){
     		n.biases = event.data.n.biases;
 
 			console.log("Training network")
-			var result = n.SGD(trainingData,30,10,0.1,5.0,testData, true, true, true, true)
+			var result = n.SGD(trainingData,1,10,0.1,5.0,testData, true, true, true, true)
 			postMessage({weights: n.weights,biases:n.biases, result: result})
     	}
 	}	
@@ -135,7 +139,7 @@ function guess(offsetX,offsetY){
 	var input = preprocess()
 	var feed = n.feedforward(arrayToMatrix(input)).m[0]
 	console.log(feed)
-	var max = 0
+	var max = -1
 	var index = 0
 	feed.forEach(function(f,i){
 		if(f >max){
@@ -173,7 +177,7 @@ makeTextFile = function (text) {
 
 //read the values in saved.js to load network
 function load(){
-  n = new Network(saved.size,CrossEntropyCost)
+  n = new Network(saved.size,new CrossEntropyCost)
   n.weights = saved.weights
   n.biases = saved.biases
 }

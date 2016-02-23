@@ -19,6 +19,24 @@ function sigmoidPrime(x){
 	return sigmoid(x)*(1-sigmoid(x))
 }
 
+function tanh(x){
+  return 2*sigmoid(2*x)-1;
+}
+
+function tanhPrime(x){
+  return 1 - tanh(x)*tanh(x);
+}
+
+function relu(x){
+  return Math.max(0,x);
+}
+
+function reluPrime(x){
+  if(x>0)
+    return 1;
+  return 0
+}
+
 //Returns a list for iteration on two parameters
 function zip() {
     var args = [].slice.call(arguments);
@@ -128,7 +146,7 @@ function Ziggurat(){
 
 //Transform the sample result (1,2,3 ...) into a 10 sized array
 function labelToArray(l){
-  var result = [0,0,0,0,0,0,0,0,0,0]
+  var result = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
   result[l] = 1
   return result
 }
@@ -162,6 +180,12 @@ function readLabel(evt) {
     } else { 
         alert("Failed to load file");
     }
+}
+
+function NaNToNum(x){
+  if (isNaN(x))
+    return 0;
+  return x
 }
 
 
