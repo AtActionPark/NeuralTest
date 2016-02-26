@@ -76,7 +76,7 @@ function redraw(){
   context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
   context.strokeStyle = "#000000";
   context.lineJoin = "round";
-  context.lineWidth = 22;
+  context.lineWidth = 15;
 			
   for(var i=0; i < clickX.length; i++) {		
     context.beginPath();
@@ -120,6 +120,7 @@ function centerImage(img) {
 
 	var dY = Math.round(rows/2 - meanY);
 	var dX = Math.round(columns/2 - meanX);
+
 	return {transX: dX, transY: dY};
 }
 
@@ -178,7 +179,7 @@ function preprocess() {
 	// convert RGBA image to a grayscale array, then compute bounding rectangle and center of mass  
 	var imgData = context.getImageData(0, 0, 280, 280);
 	grayscaleImg = imageDataToGrayscale(imgData);
-	var boundingRectangle = getBoundingRectangle(grayscaleImg, 0.01);
+	var boundingRectangle = getBoundingRectangle(grayscaleImg, 0.11);
 	var trans = centerImage(grayscaleImg); // [dX, dY] to center of mass
 
 	// copy image to hidden canvas, translate to center-of-mass, then
@@ -206,7 +207,7 @@ function preprocess() {
 	// now bin image into 10x10 blocks (giving a 28x28 image)
 	imgData = copyCtx.getImageData(0, 0, 280, 280);
 	grayscaleImg = imageDataToGrayscale(imgData);
-	var nnInput = [];
+	var nnInput = new Array(784);
 	for (var y = 0; y < 28; y++) {
 	  for (var x = 0; x < 28; x++) {
 	    var mean = 0;
@@ -217,7 +218,7 @@ function preprocess() {
 	      }
 	    }
 	    mean = (1-mean / 100); // average and invert
-	    nnInput.push(mean)
+	    nnInput[y*28+x] = mean
 	  }
 	}
 

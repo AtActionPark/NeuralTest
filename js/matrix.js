@@ -9,9 +9,9 @@ Matrix = function(column,row){
 	this.row= row;
 
 	for(var j = 0;j<row;j++){
-		m[j] = []
+		m[j] = new Array(i)
 		for(var i = 0;i<column;i++){
-			m[j].push(0)
+			m[j][i] = 0
 		}
 	}
 	this.m = m
@@ -20,9 +20,9 @@ Matrix = function(column,row){
 //Randomizes a matrix with normal distribution (mean 0, standard deviation 1 )
 Matrix.prototype.randomize = function(){
 	for(var j = 0;j<this.row;j++){
-		this.m[j] = []
+		this.m[j] = new Array(i)
 		for(var i = 0;i<this.column;i++){
-			this.m[j].push(z.nextGaussian())
+			this.m[j][i] = z.nextGaussian()
 		}
 	}
 	return this
@@ -95,14 +95,10 @@ Matrix.prototype.multiply = function(m1,m2){
 		console.log("cant multiply matrices if colums m1 != rows m2")
 	}
 	var result = new Matrix(m2.column,m1.row)
-	for(var j = 0;j<result.row;j++){
-		for(var i = 0;i<result.column;i++){
-			sum = 0
-			for(var k = 0;k<m1.column;k++)
-				sum += m1.m[j][k] * m2.m[k][i];
-			result.m[j][i] = sum
-		}
-	}
+	for(var j = 0;j<result.row;j++)
+		for(var k = 0;k<m1.column;k++)
+			for(var i = 0;i<result.column;i++)
+				result.m[j][i] += m1.m[j][k] * m2.m[k][i];
 	return result
 }
 

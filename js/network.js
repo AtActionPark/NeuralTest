@@ -52,31 +52,33 @@ Network.prototype.feedforward = function(a){
 //Backprop algo. See http://neuralnetworksanddeeplearning.com/chap1.html
 Network.prototype.backprop = function(x,y){
 	var self = this
-	nabla_b = []
-	this.biases.forEach(function(b){
-		nabla_b.push(m.clone(b).zero())
+	var nabla_b = new Array(this.biases.length)
+	this.biases.forEach(function(b,i){
+		nabla_b[i] = m.clone(b).zero()
 	})
 
-	nabla_w = []
-	this.weights.forEach(function(b){
-		nabla_w.push(m.clone(b).zero())
+	var nabla_w = new Array(this.weights.length)
+	this.weights.forEach(function(b,i){
+		nabla_w[i] = m.clone(b).zero()
 	})
 
-	activation = x;
-	activations = [x]
 
+	var biasesWeights = zip(self.biases, self.weights)
+	var activation = x;
+	var activations = new Array(biasesWeights.length+1)
+	activations[0] = x
 	var zs = [];
 
 	//feedforward
-	zip(self.biases, self.weights).forEach(function(z){
+	biasesWeights.forEach(function(z,i){
 		b = z[0]
 		w = z[1]
 
 		var z = m.add(m.multiply(activation,w),b)
-		zs.push(z)
+		zs[i] = z
 
 		activation = m.clone(z).applyAll(tanh)
-		activations.push(activation)
+		activations[i+1] = activation
 	})
 	
 	//backward pass
@@ -104,14 +106,14 @@ Network.prototype.backprop = function(x,y){
 Network.prototype.updateMiniBatch = function(miniBatch,eta,lambda,n){
 	var i = 0
 	var self = this
-	var nabla_b = []
-	this.biases.forEach(function(b){
-		nabla_b.push(m.clone(b).zero())
+	var nabla_b = new Array(this.biases.length)
+	this.biases.forEach(function(b,i){
+		nabla_b[i] = m.clone(b).zero()
 	})
 
-	var nabla_w = []
-	this.weights.forEach(function(b){
-		nabla_w.push(m.clone(b).zero())
+	var nabla_w = new Array(this.weights.length)
+	this.weights.forEach(function(b,i){
+		nabla_w[i] = m.clone(b).zero()
 	})
 
 	console.log("		Batch gradient descent")	
@@ -134,15 +136,17 @@ Network.prototype.updateMiniBatch = function(miniBatch,eta,lambda,n){
 		})
 	})
 
-	var resultW = []
-	zip(self.weights, nabla_w).forEach(function(w){
+	var weightsNablaW = zip(self.weights, nabla_w)
+	var resultW = new Array(weightsNablaW.length)
+	weightsNablaW.forEach(function(w,i){
 		var l2 = (1-eta*lambda/n)
 		var newW = m.minus(m.clone(w[0]).multiplyScalar(l2),m.clone(w[1]).multiplyScalar(eta/miniBatch.length))
-		resultW.push(newW)
+		resultW[i] = newW
 	})
-	var resultB = []
-	zip(self.biases, nabla_b).forEach(function(b){
-		resultB.push(m.minus(b[0],m.clone(b[1]).multiplyScalar(eta/miniBatch.length)))
+	var biasesNablaB = zip(self.biases, nabla_b)
+	var resultB = new Array(biasesNablaB)
+	biasesNablaB.forEach(function(b,i){
+		resultB[i] = m.minus(b[0],m.clone(b[1]).multiplyScalar(eta/miniBatch.length))
 	})
 
 	self.weights = resultW

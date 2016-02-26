@@ -1,6 +1,7 @@
 //Set the size of the sets
-var trainingSize = 60000
-var testSize = 10000
+//Max is 60000 for training and 10000 for testing
+var trainingSize = 600
+var testSize = 100
 
 
 //Set the network number and size of layers 
@@ -24,15 +25,19 @@ var worker = new Worker(URL.createObjectURL(new Blob(["("+trainNumbersWorker.toS
 worker.onmessage = function(event){
 	n.weights = event.data.weights;
 	n.biases = event.data.biases;
+	//load training cost
 	event.data.result[0].forEach(function(r){
 		result[0].push(r)
 	})
+	//load training accuracy
 	event.data.result[1].forEach(function(r){
 		result[1].push(r)
 	})
+	//load testing cost
 	event.data.result[2].forEach(function(r){
 		result[2].push(r)
 	})
+	//load testing accuracy
 	event.data.result[3].forEach(function(r){
 		result[3].push(r)
 	})
@@ -58,26 +63,31 @@ $(document).ready(function(){
     resultCanvas()
     graphCanvas()
     load()
-
 })
 
 //MNIST sets need to be formated to the network input style
 //slice the sets to desired size, format them and post them to the worker
+//If the set is too big to be sent to thw worker in one pass, it needs to be batched
 function formatSets(event){
-	trainingSet = pixelValues.slice(0,trainingSize)
-	testSet = pixelValuesTest.slice(0,testSize)
+	//if test size < max test size, shuffle the sets
+	//to ensure we take a random sample
+	trainingSet = shuffle(pixelValues)
+	testSet = shuffle(pixelValuesTest)
 
 	trainingData =  formatSet(trainingSet)
 	testData =  formatSet(testSet)
 	console.log("Set formated")
+	
+	var batchNb = 10
+	for(var i = 0;i< batchNb;i++){
+		var trainingData1 = trainingData.splice(0,trainingSize/batchNb)
+		var testData1 = testData.splice(0,testSize/batchNb)
+		worker.postMessage({trainingData: trainingData1})
+		setTimeout(worker.postMessage({testData: testData1}),50)
+		console.log("...Posting batch data to worker: " + i + "/" + batchNb)
+	}
+	console.log('Data posted')
 
-	trainingData = shuffle(trainingData.splice(0,40000))
-	testData = shuffle(testData.splice(0,10000))
-
-	console.log("...Posting training")
-	worker.postMessage({trainingData: trainingData})
-	console.log("...Posting test")
-	setTimeout(worker.postMessage({testData: testData}),50)
 }
 
 //reset the network with random weight and biases
@@ -85,6 +95,7 @@ function initNet(){
 	n = new Network(size,new CrossEntropyCost)
 	n.init()
 	console.log("Network created")
+	//drawTest(1)
 
 }
 
@@ -104,31 +115,31 @@ function trainNumbersWorker(){
 
 	onmessage = function(event){
 		if(event.data.trainingData){
-			trainingData = event.data.trainingData
-			console.log("TrainingData sent to worker")
+			event.data.trainingData.forEach(function(v) {self.trainingData.push(v),this});     
+			console.log("Data batch received")
 		}
 		if(event.data.testData){
-			testData = event.data.testData
-			console.log("TestData sent to worker")
+			event.data.testData.forEach(function(v) {self.testData.push(v)});   
+			console.log("Data batch received")
 		}
 
 		// main function: run the SGD algo on the network
 		// needs to be on a separate thread for big sets
     	if(event.data.start){
+    		var start = new Date().getTime();
 	    	n = new Network(event.data.n.sizes,new CrossEntropyCost)
 	    	n.weights = event.data.n.weights;
     		n.biases = event.data.n.biases;
 
 			console.log("Training network")
 			var result = n.SGD(trainingData,1,10,0.1,5.0,testData, true, true, true, true)
+			var end = new Date().getTime();
+			var time = end - start;
+			console.log('Execution time: ' + time);
 			postMessage({weights: n.weights,biases:n.biases, result: result})
     	}
 	}	
 }
-
-
-
-
 
 
 
@@ -138,7 +149,9 @@ function guess(offsetX,offsetY){
 	
 	var input = preprocess()
 	var feed = n.feedforward(arrayToMatrix(input)).m[0]
+	//console.log("computed input")
 	console.log(feed)
+	//check all outputs a return the index of the one with max value
 	var max = -1
 	var index = 0
 	feed.forEach(function(f,i){
@@ -147,8 +160,10 @@ function guess(offsetX,offsetY){
 			index = i
 		}
 	})
+
 	$("#result").html(index)
 	
+	//reset drawing
 	clickX = new Array();
 	clickY = new Array();
 	clickDrag = new Array();	
@@ -157,7 +172,6 @@ function guess(offsetX,offsetY){
 //create a download link with network data
 function save(){
   data = {size: n.sizes, weights: n.weights, biases: n.biases}
-  //console.log(JSON.stringify(data))
   var link = document.getElementById('downloadlink');
   link.href = makeTextFile(JSON.stringify(data));
   link.style.display = 'block';
@@ -188,6 +202,54 @@ function toggleProcess(){
 function toggleTools(){
 	$("#trainingTools").toggle()
 }
+
+function drawTest(digit){
+  var imageData = context.getImageData(0,0, 28, 28);
+  var r = 0
+  while(trainingData[r][1].m[0][digit] != 1){
+  	var r = Math.floor(Math.random()*trainingData.length)
+  }
+  console.log(r)
+  r = 406
+  var t = trainingData[r][0].m[0]
+
+  for (var i = 0; i < t.length; i+=1)
+  {
+    imageData.data[i * 4] = 255-t[i]*255 ;
+    imageData.data[i * 4 + 1] = 255-t[i]*255 ;
+    imageData.data[i * 4 + 2] = 255-t[i]*255 ;
+    imageData.data[i * 4 + 3] = 255;
+  }
+
+	var newCanvas = $("<canvas>")
+    .attr("width", imageData.width)
+    .attr("height", imageData.height)[0];
+
+	newCanvas.getContext("2d").putImageData(imageData, 0, 0);
+
+	context.save()
+	context.scale(10, 10);
+	context.drawImage(newCanvas, 0, 0);
+	context.restore()
+
+	var feed = n.feedforward(arrayToMatrix(t)).m[0]
+	//console.log("original input")
+	console.log(feed)
+	var max = -1
+	var index = 0
+	feed.forEach(function(f,i){
+		if(f >max){
+			max = f;
+			index = i
+		}
+	})
+	$("#result").html(index)
+}
+
+
+
+
+
 
 
 
